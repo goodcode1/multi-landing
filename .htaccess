@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.st\.goodcode\.ru$ [NC]
+RewriteRule ^(.*)$ http://st.goodcode.ru:7000$1
+
+Redirect 301 /ml.js http://st.goodcode.ru:7000/ml.js

@@ -48,11 +48,17 @@ app.route('/get/')
 
 app.route('/ml.js')
 	.get(function(req, res) {
-		fs.readFile(__dirname + '/js/' + req.hostname + '.js', function(err, data) {
-			jsObfuscator(data.toString()).then(function(o) {
-				res.send(o);
+		fs.exists(__dirname + '/js/' + req.hostname + '.js', function(exists) {
+			if(!exists) {
+				res.send("No file");
+				return false;
+			}
+			fs.readFile(__dirname + '/js/' + req.hostname + '.js', function(err, data) {
+				jsObfuscator(data.toString()).then(function(o) {
+					res.send(o);
+				});
+				
 			});
-			
 		});
 	});
 
