@@ -1,15 +1,16 @@
 var express = require('express'),
 	app = express(),
+	config = require('./config'),
 	bodyParser = require('body-parser'),
 	fs = require('fs'),
 	parse = require('csv-parse'),
 	iconv = require('iconv-lite'),
 	jsObfuscator = require('js-obfuscator'),
 	session = require('express-session'),
-	md5 = require('md5');
+	md5 = require('md5'),
+	arguments = require("./lib/arguments-parser")(process.argv).parse();
 
 var User = require('./lib/user.js');
-
 
 // Common application settings
 app.set("public", __dirname + "/public");
@@ -60,10 +61,8 @@ app.route('/login/')
 
 		var userInfo = User.login(login, password, function(info) {
 			if(info) {
-				req.session.regenerate(function() {
-					req.session.user = info;
-					res.redirect("/personal/");
-				});
+				req.session.user = info;
+				res.redirect("/personal/");
 			} else {
 				res.redirect("/login/");
 			}
@@ -135,5 +134,6 @@ app.route('/ml.js')
 	});
 
 
-
-app.listen(7000);
+// Start server
+app.listen(arguments.port || 7000);
+console.log("Server has been started at " + new Date().toString() + " on port " + arguments.port);
