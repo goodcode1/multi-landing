@@ -7,12 +7,14 @@ var express = require('express'),
 
 app.route('/')
 	.get(function(req, res) {
-		res.send('Hello world!');
+		res.sendFile(__dirname + '/index.html');
 	});
 
 app.route('/get/')
 	.get(function(req, res) {
-		fs.readFile(__dirname + '/data/' + req.hostname + '.csv', function(err, data) {
+		var host = 'lp.antaros.net';
+		
+		fs.readFile(__dirname + '/data/' + host + '.csv', function(err, data) {
 			var iconvString = iconv.decode(new Buffer(data), 'win1251');
 			parse(iconvString, {
 				delimiter: ';'
@@ -29,12 +31,12 @@ app.route('/get/')
 						];
 						continue;
 					}
-					var term = data[i][0].match(/{(.*)}/gi).toString(),
-						term = term.substr(1, term.length - 2);
+					var term = data[i][0];
 
 					json[term] = [
 						data[i][2],
-						data[i][3]
+						data[i][3],
+						data[i][4]
 					];
 				}
 				sendResult(json);
@@ -48,15 +50,18 @@ app.route('/get/')
 
 app.route('/ml.js')
 	.get(function(req, res) {
-		fs.exists(__dirname + '/js/' + req.hostname + '.js', function(exists) {
+		var host = 'lp.antaros.net';
+
+		fs.exists(__dirname + '/js/' + host + '.js', function(exists) {
 			if(!exists) {
-				res.send("No file");
+				res.send("//No file");
 				return false;
 			}
-			fs.readFile(__dirname + '/js/' + req.hostname + '.js', function(err, data) {
-				jsObfuscator(data.toString()).then(function(o) {
+			fs.readFile(__dirname + '/js/' + host + '.js', function(err, data) {
+				/*jsObfuscator(data.toString()).then(function(o) {
 					res.send(o);
-				});
+				});*/
+				res.send(data.toString());
 				
 			});
 		});

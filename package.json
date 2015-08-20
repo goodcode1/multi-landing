@@ -6,6 +6,7 @@
     "csv-parse": "^1.0.0",
     "express": "^4.13.3",
     "iconv-lite": "^0.4.11",
-    "js-obfuscator": "^0.1.0"
+    "js-obfuscator": "^0.1.0",
+    "mysql": "^2.8.0"
   }
 }
