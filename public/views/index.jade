@@ -1,0 +1,23 @@
+doctype html
+html(lang="ru")
+	head
+		meta(charset="UTF-8")
+		title Multilanding system
+
+		link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css")
+		script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.min.js")
+
+	body
+		div(class="container")
+			div(class="col-md-4 col-md-offset-4")
+				form(action="/login/", method="post")
+					h2 Please sign in
+					label(for="login-email", class="sr-only") Email address
+					input(type="email", id="login-email", name="login-email", class="form-control", placeholder="Email address", required, autofocus)
+					label(for="login-password", class="sr-only") Password
+					input(type="password", id="login-password", name="login-password", class="form-control", placeholder="Password", required)
+					div(class="checkbox")
+						label
+							input(type="checkbox", name="login-remember", value="remember-me")
+							| Remember me
+					button(class="btn btn-lg btn-primary btn-block", type="submit") Sign in
