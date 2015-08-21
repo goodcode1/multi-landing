@@ -1,80 +1,135 @@
-var express = require('express'),
-	app = express(),
-	config = require('./config'),
-	bodyParser = require('body-parser'),
-	fs = require('fs'),
-	parse = require('csv-parse'),
-	iconv = require('iconv-lite'),
-	jsObfuscator = require('js-obfuscator'),
-	session = require('express-session'),
-	md5 = require('md5'),
-	arguments = require("./lib/arguments-parser")(process.argv).parse();
+// Required modules
+var express = require("express"),
+	bodyParser = require("body-parser"),
+	parse = require("csv-parse"),
+	fs = require("fs"),
+	jsObfuscator = require("js-obfuscator"),
+	iconv = require("iconv-lite"),
+	md5 = require("md5"),
+	session = require("express-session"),
+	merge = require("merge");
+// //Required modules
 
-var User = require('./lib/user.js');
 
-// Common application settings
+
+// Common settings
+var config = require("./config"),
+	settings = merge(config.app, require("./lib/arguments-parser")(process.argv).parse());
+// //Common settings
+
+
+
+// Server initialization and settings
+var app = express();
+
 app.set("public", __dirname + "/public");
 app.set("views", app.get("public") + "/views");
-
-// Set jade as default rendoer for html pages
 app.set("view engine", "jade");
-
-// Body requests parser
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
+// //Server
 
-// Sessions settings
+
+
+// Session settings
 app.use(session({
 	secret: md5("ml"),
 	resave: false,
+	rollign: true,
 	saveUninitialized: true,
 	name: "ml",
-	cookie: {
+	/*cookie: {
 		secure: true
-	}
+	}*/
 }));
-
-//app.use(express.static('public'));
-
+// //Session settings
 
 
 
+// User settings
+var User = require('./lib/user.js');
+// //User settings
+
+
+
+/*** Routers ***/
+
+// Default handler for all queries
+app.use(function(req, res, next) {
+	req.renderParams = {
+		"active": req.url,
+		"user": req.session.user ? req.session.user.params : null
+	};
+	next();
+});
+// //Default handler for all queries
 
 // Home page
 app.route("/")
 	.get(function(req, res) {
-		res.render("index");
+		res.render("index", req.renderParams);
 	});
+// //Home page
 
-app.route("/personal/")
+// About page
+app.route("/about/")
 	.get(function(req, res) {
-		console.log(req.session.user);
-		res.sendFile(__dirname + '/public/personal.html');
+		res.render("about", req.renderParams);
 	});
+// //About page
 
-/*** Users authorization ***/
-app.route('/login/')
+// Contacts page
+app.route("/contacts/")
+	.get(function(req, res) {
+		res.render("contacts", req.renderParams);
+	});
+// //Contacts page
+
+// Login
+app.route("/login/")
 	.post(function(req, res) {
 		var login = req.body["login-email"],
-			password = req.body["login-password"];
+			password = req.body["login-password"],
+			user = new User();
 
-		var userInfo = User.login(login, password, function(info) {
-			if(info) {
-				req.session.user = info;
+		user.login(login, password, req, function(isLogin) {
+			if(isLogin) {
 				res.redirect("/personal/");
 			} else {
-				res.redirect("/login/");
+				res.render("login", merge({
+					error: "Please, check your email and password."
+				}, req.renderParams));
 			}
 		});
-
-
-
 	})
 	.get(function(req, res) {
-		res.sendFile(__dirname + '/public/index.html');
+		res.render("login", req.renderParams);
 	});
-/*** //Users authorization ***/
+// Login
+
+// Logout
+app.route("/logout/")
+	.get(function(req, res) {
+		req.session.user = null;
+		res.redirect("/");
+	});
+// //Logout
+
+// Personal page
+app.route("/personal/")
+	.get(function(req, res) {
+		if(req.session.user) {
+			res.render("personal", req.renderParams);
+		} else {
+			res.render("index", merge({
+				error: "Please, authorize."
+			}, req.renderParams));
+		}
+	});
+// //Personal page
+
+
 
 app.route('/get/')
 	.get(function(req, res) {
@@ -135,5 +190,5 @@ app.route('/ml.js')
 
 
 // Start server
-app.listen(arguments.port || 7000);
-console.log("Server has been started at " + new Date().toString() + " on port " + arguments.port);
+app.listen(settings.port);
+console.log("Server has been started at " + new Date().toString() + " on port " + settings.port);

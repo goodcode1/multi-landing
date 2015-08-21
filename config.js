@@ -1,6 +1,8 @@
 module.exports = function() {
 	return {
-		"db" : {
+		"app": {
+			"port": "7000"
+		}, "db" : {
 			"host": "localhost",
 			"port": "3308",
 			"database": "ml",

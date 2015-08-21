@@ -1,0 +1,18 @@
+extends ../templates/base
+
+block content
+	h1 Personal
+			
+	div(class="row")
+		div(class="col-md-6")
+			div(class="panel panel-primary")
+				div(class="panel-heading")
+					h3(class="panel-title") User info
+				div(class="panel-body")
+					table(class="table table-striped")
+						tr
+							th id
+							td #{user.id}
+						tr
+							th email
+							td #{user.email}

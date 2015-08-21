@@ -1,0 +1,38 @@
+doctype html
+html(lang="ru")
+	head
+		meta(charset="UTF-8")
+		title Multilanding system
+
+		link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css")
+		script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.min.js")
+	body
+		div(class="navbar navbar-default")
+			div(class="container")
+				div(class="navbar-header")
+					button(type="button", class="navbar-toggle collapsed", data-toggle="collapse", data-target="#bs-example-navbar-collapse-6", aria-expanded="false")
+						span(class="sr-only") Toggle navigation
+						span(class="icon-bar")
+						span(class="icon-bar")
+						span(class="icon-bar")
+					if active == '/'
+						span(class="navbar-brand") Multilanding System
+					else
+						a(href="/" class="navbar-brand") Multilanding System
+				div(class="collapse navbar-collapse")
+					ul(class="nav navbar-nav")
+						li(class= active == '/about/' ? "active" : "")
+							a(href="/about/") About
+						li(class= active == '/contacts/' ? "active" : "")
+							a(href="/contacts/") Contacts
+						if user
+							li(class= active == '/personal/' ? "active" : "")
+								a(href="/personal/") Personal
+
+					ul(class="nav navbar-nav navbar-right")
+						if !user
+							a(href="/login/" class="btn btn-primary navbar-btn") Sign in
+						else
+							a(href="/logout/" class="btn btn-primary navbar-btn") Sign out
+		div(class="container")
+			block content
